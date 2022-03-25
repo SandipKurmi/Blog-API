@@ -47,7 +47,7 @@ router.post('/login',  async (req, res) => {
                     error: false,
                     statusCode: 200,
                     data: others,
-                    token:generateToken(User._id)
+                    token:generateToken(user._id)
                 })
             } else {
                 res.status(400).json({

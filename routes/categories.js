@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const Category = require("../models/Category");
 const protect = require('../middleware/authMiddelwear')
-
-
+require('dotenv').config()
+// eslint-disable-next-line import/no-extraneous-dependencies
+const  jwt = require('jsonwebtoken') ;
 //post category
 // router.post("/" , async (req, res)=> {
 //     const newCat = new Category(req.body);
@@ -23,24 +24,51 @@ const protect = require('../middleware/authMiddelwear')
 // }
 // })
 
-router.post("/",protect, async (req, res) => {
-    const newCat = new Category(req.body);
+// router.post("/", async (req, res) => {
+//     const newCat = new Category(req.body);
+//     try {
+//       const savedCat = await newCat.save();
+//       res.status(200).json({
+//         error: false,
+//         statusCode: 200,
+//         data: savedCat,
+        
+//       });
+//     } catch (error) {
+//       res.status(500).json({
+//         error: true,
+//         statusCode: 500,
+//         data: error,
+//       });
+//     }
+//   });
+router.post("/", async (req, res) => {
+  if (req.headers.authorization) {
+    const token = req.headers.authorization
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+      var data = new Category({
+        name: req.body.name,
+        userid: req.user.id
+    });
+    await data.save()
     try {
-      const savedCat = await newCat.save();
       res.status(200).json({
         error: false,
         statusCode: 200,
-        data: savedCat,
+        data: data,
+        
       });
     } catch (error) {
       res.status(500).json({
         error: true,
         statusCode: 500,
-        data: error,
+        data: 'error',
       });
     }
-  });
-
+  }
+  
+} );
 
 //get categories
 router.get('/',protect, async (req, res) => {
