@@ -1,13 +1,13 @@
-const router = require('express').Router();
-const User = require('../models/User')
-const bcrypt = require("bcrypt");
+const User = require('../models/User.model');
+const Post = require('../models/Post.model')
+var bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 
-
-//frist user going to register
-router.post('/register', async (req, res) => {
-    try {
+//  register new user
+exports.register = async (req, res) => {
+    try{
+      
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(req.body.password, salt);
         const newUser = new User({
@@ -15,7 +15,6 @@ router.post('/register', async (req, res) => {
             email: req.body.email,
             password: hashedPass,
         });
-
         const user = await newUser.save();
         res.status(200).json({
             error: false,
@@ -23,8 +22,7 @@ router.post('/register', async (req, res) => {
             data: user,
 
         });
-    } catch (error) {
-
+    }catch(error){
         res.status(500).json({
             error: true,
             statusCode: 500,
@@ -33,11 +31,11 @@ router.post('/register', async (req, res) => {
         })
         console.log(error)
     }
-});
+};
 
-//second user can login
-router.post('/login',  async (req, res) => {
-    try {
+//login uesr
+exports.login = async (req, res) => {
+    try{
         const user = await User.findOne({ username: req.body.username })    
         const validated = await bcrypt.compare(req.body.password, user.password)
         // const token = jwt.sign({ userID: user._id }, 'process.env.JWT_SECRET_KEY', { expiresIn: '45m' })
@@ -56,15 +54,15 @@ router.post('/login',  async (req, res) => {
                     data: "login information is not matching",
                 })
             }       
-    } catch (error) {
+        
+    }catch(error){
         res.status(500).json({
             error: true,
             statusCode: 500,
             data: "server error",
         })
-        // console.log(error)
     }
-})
+};
 
 
 const generateToken = (id) => {
@@ -72,5 +70,3 @@ const generateToken = (id) => {
       expiresIn: '30d',
     })
   }
-
-module.exports = router

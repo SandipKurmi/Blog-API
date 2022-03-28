@@ -2,23 +2,26 @@ const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema(
   {
+    categoryid:{
+      type:String,
+      required: true
+    },
+    userid:{
+      type: String,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: true,
-      unique: true,
     },
-    desc: {
+    desc:{
       type: String,
       required: true,
-    },
-    username: {
-      type: String,
-      required: true,
-    },
-    categories: {
-      type: Array,
-      required: false,
-    },
+    }
   },
   { timestamps: true }
 );
